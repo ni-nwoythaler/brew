@@ -16,13 +16,26 @@ module Homebrew
         Display the path where <formula> is located.
       EOS
 
-      named_args :formula, min: 1
+      switch "--formula", "--formulae",
+             description: "Treat all named arguments as formulae."
+      switch "--cask", "--casks",
+             description: "Treat all named arguments as casks."
+
+      conflicts "--formula", "--cask"
+
+      named_args [:formula, :cask]
     end
   end
 
   def formula
     args = formula_args.parse
 
-    args.named.to_formulae_paths.each(&method(:puts))
+    args.named.to_paths.select do |path|
+      if ! path.exist?
+        next
+      else
+        puts path
+      end
+    end
   end
 end
